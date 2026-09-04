@@ -1,0 +1,27 @@
+[project]
+name = "flet-terminal-log"
+version = "0.1.0"
+description = "TerminalLog control for Flet"
+readme = "README.md"
+authors = [{ name = "Flet contributors", email = "hello@flet.dev" }]
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "flet",
+]
+
+[project.urls]
+Homepage = "https://mydomain.dev"
+Documentation = "https://github.com/MyGithubAccount/terminal-log"
+Repository = "https://github.com/MyGithubAccount/terminal-log"
+Issues = "https://github.com/MyGithubAccount/terminal-log/issues"
+
+[tool.setuptools.package-data]
+"flutter.flet_terminal_log" = [
+    "pubspec.yaml",
+    "lib/**",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

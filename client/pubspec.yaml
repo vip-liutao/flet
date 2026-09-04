@@ -91,6 +91,9 @@ dependencies:
   flet_code_editor:
     path: ../sdk/python/packages/flet-code-editor/src/flutter/flet_code_editor
 
+  flet_terminal_log:
+    path: ../sdk/python/packages/flet-terminal-log/src/flutter/flet_terminal_log
+
   integration_test:
     sdk: flutter
 
