@@ -1,0 +1,81 @@
+name: Build-Windows
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ROOT: "${{ github.workspace }}"
+  SDK_PYTHON: "${{ github.workspace }}/sdk/python"
+  SCRIPTS: "${{ github.workspace }}/.github/scripts"
+  UV_PYTHON: "3.12.7"
+
+jobs:
+  # =============================
+  # Build Flet Client for Windows
+  # =============================
+  build_windows:
+    name: Build Flet Client for Windows
+    runs-on: windows-2025-vs2026
+    permissions:
+      contents: read
+    env:
+      PKG_VER: "0.86.5"
+      BUILD_NUM: "1"
+      PYPI_VER: "0.86.5"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: false
+
+      - name: Setup Flutter
+        uses: kuhnroyal/flutter-fvm-config-action/setup@c378498f1d1962d33039c3989411093ef8a17b2c # v3.3
+        with:
+          path: '.fvmrc'
+          cache: false
+
+      - name: Build Flutter Windows client
+        env:
+          RUNNER_DIR: ${{ env.ROOT }}/client/build/windows/x64/runner
+          RELEASE_DIR: ${{ env.ROOT }}/client/build/windows/x64/runner/Release
+        shell: bash
+        working-directory: client
+        run: |
+          flutter pub get
+          
+          flutter build windows --build-name="$PKG_VER" --build-number="$BUILD_NUM"
+          
+          # Copy needed runtime DLLs
+          cp "${WINDIR}/system32/msvcp140.dll" "$RELEASE_DIR"
+          cp "${WINDIR}/system32/vcruntime140.dll" "$RELEASE_DIR"
+          cp "${WINDIR}/system32/vcruntime140_1.dll" "$RELEASE_DIR"
+          
+          # Rename Release folder to flet
+          mv "$RELEASE_DIR" "${RUNNER_DIR}/flet"
+          
+          # Zip up the runner
+          cd "$RUNNER_DIR"
+          7z a "${ROOT}/client/flet-windows.zip" "flet"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: windows-artifacts
+          if-no-files-found: error
+          path: |
+            client/flet-windows.zip
+
+
+
+
+
+
