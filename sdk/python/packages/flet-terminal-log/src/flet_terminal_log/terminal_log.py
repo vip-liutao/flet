@@ -6,7 +6,7 @@ import flet as ft
 class TerminalLog(ft.LayoutControl):
 
     on_data_channel_open: Optional[ft.EventHandler[ft.DataChannelOpenEvent]] = None
-    on_data_channel_close: Optional[ft.EventHandler[ft.DataChannelOpenEvent]] = None
+    # on_data_channel_close: Optional[ft.EventHandler[ft.DataChannelOpenEvent]] = None
 
     def init(self) -> None:
         self._channel: Optional[ft.DataChannel] = None
@@ -19,3 +19,7 @@ class TerminalLog(ft.LayoutControl):
     async def push_frame(self, text_bytes: bytes) -> None:
         assert self._channel is not None
         self._channel.send(text_bytes)
+
+    # async def clear(self):
+    #     """清空终端"""
+    #     await self._invoke_method("clear")

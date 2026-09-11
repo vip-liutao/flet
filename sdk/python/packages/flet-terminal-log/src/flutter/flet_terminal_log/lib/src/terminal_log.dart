@@ -68,12 +68,12 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
       colors: _config.colors.copyWith(
         selection: 0xFF6600,
       ),
-      scrolling: const ScrollConfig(history: 100000, multiplier: 3),
+      scrolling: const ScrollConfig(history: 100000, multiplier: 1),
     );
 
     _initRustLib();
     _focus.addListener(_onFocusChange);
-    widget.control.addInvokeMethodListener(_invokeMethod);
+    // widget.control.addInvokeMethodListener(_invokeMethod);
   }
 
   // RustLib 初始化 必须
@@ -113,13 +113,13 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
     _engine?.feed(bytes);
   }
 
-  Future<dynamic> _invokeMethod(String name, dynamic args) async {
-    switch (name) {
-      case "clear":
-        _engine?.clearHistory();
-      default: ;
-    }
-  }
+  // Future<dynamic> _invokeMethod(String name, dynamic args) async {
+  //   switch (name) {
+  //     case "clear":
+  //       _engine?.clearHistory();
+  //     default: ;
+  //   }
+  // }
 
   // 调整光标
   void _onFocusChange() {
@@ -265,7 +265,7 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
     _engine = null;
     _focus.removeListener(_onFocusChange);
     _focus.dispose();
-    widget.control.removeInvokeMethodListener(_invokeMethod);
+    // widget.control.removeInvokeMethodListener(_invokeMethod);
     super.dispose();
   }
 
