@@ -73,18 +73,21 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
 
     _initRustLib();
     _focus.addListener(_onFocusChange);
+    widget.control.addInvokeMethodListener(_invokeMethod);
   }
 
   // RustLib 初始化 必须
   Future<void> _initRustLib() async {
     await RustManager.init();
 
+    if (!mounted) return;
+
     // 在 RustLib 初始化完成后 引擎同步创建与绑定
     final engine = TerminalEngine(config: _config);
     _engine = engine;
     _controller.attach(engine);
 
-    if (mounted) setState(() {});
+    setState(() {});
     triggerEvent();
   }
 
@@ -108,6 +111,14 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
 
   void _onFrameFromPython(Uint8List bytes) {
     _engine?.feed(bytes);
+  }
+
+  Future<dynamic> _invokeMethod(String name, dynamic args) async {
+    switch (name) {
+      case "clear":
+        _engine?.clearHistory();
+      default: ;
+    }
   }
 
   // 调整光标
@@ -254,6 +265,7 @@ class _TerminalLogControlState extends State<TerminalLogControl> {
     _engine = null;
     _focus.removeListener(_onFocusChange);
     _focus.dispose();
+    widget.control.removeInvokeMethodListener(_invokeMethod);
     super.dispose();
   }
 
